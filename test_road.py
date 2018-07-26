@@ -13,8 +13,6 @@ def test_video(sess, image_shape, logits, keep_prob, input_image):
     else:
         cap = cv2.VideoCapture('./videos/kitty_street.avi')
 
-    image_file = './data/data_road/testing/image_2/uu_000064.png'
-
     while (cap.isOpened()):
         ret, raw_img = cap.read()
 
@@ -43,19 +41,23 @@ if CLOUD_MODE:
 else:
     model_dir = os.getcwd() + '/checkpoints'
 
-num_classes = 2
-image_shape = (160, 576)
+def main():
+    num_classes = 2
+    image_shape = (160, 576)
 
-saver = tf.train.import_meta_graph(model_dir + '/model.meta')
-graph = tf.get_default_graph()
+    saver = tf.train.import_meta_graph(model_dir + '/model.meta')
+    graph = tf.get_default_graph()
 
-logits = graph.get_operation_by_name('logits').outputs[0]
-keep_prob = graph.get_tensor_by_name('keep_prob:0')
-input_image = graph.get_tensor_by_name('image_input:0')
+    logits = graph.get_operation_by_name('logits').outputs[0]
+    keep_prob = graph.get_tensor_by_name('keep_prob:0')
+    input_image = graph.get_tensor_by_name('image_input:0')
 
 
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-    saver.restore(sess, model_dir + '/model')
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        saver.restore(sess, model_dir + '/model')
 
-    test_video(sess, image_shape, logits, keep_prob, input_image)
+        test_video(sess, image_shape, logits, keep_prob, input_image)
+
+if __name__ == '__main__':
+    main()

@@ -4,9 +4,11 @@ import os
 import scipy.misc
 import cv2
 from glob import glob
+np.set_printoptions(threshold=np.nan)
+
+image_shape = (160, 576)
 
 # data_dir = './data'
-# image_shape = (160, 576)
 # image_path = './data/data_road/training/gt_image_2/umm_road_000082.png'
 # gt_image = scipy.misc.imresize(scipy.misc.imread(image_path), image_shape)
 # # gt_image = cv2.cvtColor(gt_image, cv2.COLOR_BGR2RGB)
@@ -38,3 +40,7 @@ img = cv2.imread(gt_image_file)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 cv2.imshow('img', img)
 cv2.waitKey(0)
+
+data_folder = './data/data_semantics/training/image_2'
+image_paths = glob(os.path.join(data_folder, 'image_2', '*.png'))
+print(image_paths)

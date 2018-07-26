@@ -4,29 +4,17 @@ import tensorflow as tf
 import helper
 import warnings
 from distutils.version import LooseVersion
-import project_tests as tests
 import random
 from glob import glob
 import numpy as np
 import scipy.misc
+np.set_printoptions(threshold=np.nan)
 
 CLOUD_MODE = True
 if CLOUD_MODE:
     data_dir = '/input'
 else:
     data_dir = './data'
-
-# Check TensorFlow Version
-assert LooseVersion(tf.__version__) >= LooseVersion(
-    '1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
-print('TensorFlow Version: {}'.format(tf.__version__))
-
-
-# # Check for a GPU
-# if not tf.test.gpu_device_name():
-#     warnings.warn('No GPU found. Please use a GPU to train your neural network.')
-# else:
-#     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
 
 
 def load_vgg(sess, vgg_path):
@@ -36,8 +24,6 @@ def load_vgg(sess, vgg_path):
     :param vgg_path: Path to vgg folder, containing "variables/" and "saved_model.pb"
     :return: Tuple of Tensors from VGG model (image_input, keep_prob, layer3_out, layer4_out, layer7_out)
     """
-    # TODO: Implement function
-    #   Use tf.saved_model.loader.load to load the model and weights
     vgg_tag = 'vgg16'
     vgg_input_tensor_name = 'image_input:0'
     vgg_keep_prob_tensor_name = 'keep_prob:0'
@@ -53,9 +39,6 @@ def load_vgg(sess, vgg_path):
     layer7_output = tf.get_default_graph().get_tensor_by_name(vgg_layer7_out_tensor_name)
 
     return image_input, keep_prob, layer3_output, layer4_output, layer7_output
-
-
-tests.test_load_vgg(load_vgg, tf)
 
 
 def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
@@ -107,9 +90,6 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     return upsample_final
 
 
-tests.test_layers(layers)
-
-
 def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     """
     Build the TensorFLow loss and optimizer operations.
@@ -133,9 +113,6 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     return logits, train_op, cross_entropy_loss
 
 
-tests.test_optimize(optimize)
-
-
 def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
              correct_label, keep_prob, learning_rate, image_shape):
     """
@@ -151,14 +128,13 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    # TODO: Implement function
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
 
     if CLOUD_MODE:
         model_dir = '/output'
     else:
-        model_dir = os.getcwd() + '/checkpoints'
+        model_dir = os.getcwd() + './seg_model'
 
     print('Start Training...\n')
     for i in range(epochs):
@@ -173,8 +149,6 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     print('model saved!')
 
 
-# tests.test_train_nn(train_nn)
-
 def get_batches_fn(batch_size, image_shape):
     img_dir = os.path.join(data_dir, 'data_semantics/training/image_2')
     image_paths = glob(os.path.join(img_dir, '*.png'))
@@ -182,10 +156,12 @@ def get_batches_fn(batch_size, image_shape):
     label_paths = glob(os.path.join(label_dir, '*.png'))
     label_dict = {os.path.basename(path) : path for path in label_paths}
 
-    people_color = 24
-    bike_color = 30
-    car_color = 25
-    road_color = 9
+    '''Label: people:25 bike:33 car:26 road:7 others'''
+    '''Class: people:0  bike:1  car:2  road:3 others:4'''
+    people_color = 25
+    bike_color = 33
+    car_color = 26
+    road_color = 7
 
     random.shuffle(image_paths)
     for batch_i in range(0, len(image_paths), batch_size):
@@ -196,9 +172,6 @@ def get_batches_fn(batch_size, image_shape):
 
             image = scipy.misc.imresize(scipy.misc.imread(image_file), image_shape)
             gt_image = scipy.misc.imresize(scipy.misc.imread(gt_image_file), image_shape)
-            # TODO: # CLASS: people:24 bike:30 car:25 road:9 others:
-            # TODO: # LABEL: people:0  bike:1  car:2  road:3 others:4
-
             gt_people = (gt_image == people_color).reshape(*gt_image.shape, 1)
             gt_bike = (gt_image == bike_color).reshape(*gt_image.shape, 1)
             gt_car = (gt_image == car_color).reshape(*gt_image.shape, 1)
@@ -215,24 +188,11 @@ def run():
     num_classes = 5
     image_shape = (160, 576)
 
-    # tests.test_for_kitti_dataset(data_dir)
-
-    # Download pretrained vgg model
-    # helper.maybe_download_pretrained_vgg(data_dir)
-
-    # OPTIONAL: Train and Inference on the cityscapes dataset instead of the Kitti dataset.
-    # You'll need a GPU with at least 10 teraFLOPS to train on.
-    #  https://www.cityscapes-dataset.com/
-
     with tf.Session() as sess:
         # Path to vgg model
         vgg_path = os.path.join(data_dir, 'vgg')
 
-        # OPTIONAL: Augment Images for better results
-        #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
-
-        # TODO: Build NN using load_vgg, layers, and optimize function
-        epochs = 40
+        epochs = 60
         batch_size = 5
 
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name='correct_label')
@@ -244,11 +204,8 @@ def run():
 
         logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
 
-        # TODO: Train NN using the train_nn function
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate, image_shape)
-
-        # OPTIONAL: Apply the trained model to a video
 
 
 if __name__ == '__main__':

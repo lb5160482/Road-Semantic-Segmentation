@@ -18,3 +18,5 @@ runs
 checkpoints
 videos
 raw_img_sequences
+seg_model
+output_video
