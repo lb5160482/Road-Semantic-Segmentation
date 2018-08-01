@@ -29,6 +29,7 @@ videos/
 raw_img_sequences/
 checkpoints/
 seg_model/
+augmented_data/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
