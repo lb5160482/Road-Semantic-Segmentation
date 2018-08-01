@@ -70,7 +70,7 @@ name                     		  id      		category
 'bicycle'              		 , 33 ,    		  'vehicle'        
 'license plate'       		 , -1 ,    		  'vehicle'        
 
-##### Data Augmentation
+#### Data Augmentation
 To train a more robust model, here I implemented data augmentation, which includes image scaling with different scales, flipping, adding salt and pepper noise and darkening. These implementations enlarged data size to 8 times than its original size,  which helps alot. Below are some sample images:
 
 ###### Scaling
