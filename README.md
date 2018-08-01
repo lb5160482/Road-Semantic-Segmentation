@@ -5,6 +5,10 @@
 [image3]: ./output_img/000052_10.png	"Image_sample3"
 [image4]: ./output_video/multi_class_seg_FPS20.gif	"gif1"
 [image5]: ./readme_img/FCN_architecfture.png	"Architecture"
+[image6]: ./readme_img/scaled_raw_image.png	"scaled"
+[image7]: ./readme_img/flipped_raw_image.png	"flipped"
+[image8]: ./readme_img/noise_raw_image.png	"nise"
+[image9]: ./readme_img/lightened_raw_image.png	"darkened"
 
 
 
@@ -65,6 +69,21 @@ name                     		  id      		category
 'motorcycle'           	 , 32 ,   		  'vehicle'        
 'bicycle'              		 , 33 ,    		  'vehicle'        
 'license plate'       		 , -1 ,    		  'vehicle'        
+
+##### Data Augmentation
+To train a more robust model, here I implemented data augmentation, which includes image scaling with different scales, flipping, adding salt and pepper noise and darkening. These implementations enlarged data size to 8 times than its original size,  which helps alot. Below are some sample images:
+
+###### Scaling
+![alt text][image6]
+
+###### Flipping
+![alt text][image7]
+
+###### Salt and pepper noise
+![alt text][image8]
+
+###### Darkening
+![alt text][image9]
 
 ### Start
 ##### Implement
